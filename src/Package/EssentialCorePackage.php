@@ -107,9 +107,9 @@ final class EssentialCorePackage implements PackageInterface
     public function getParameters(): array
     {
         return [
-            'app.url' => getenv('APP_URL') ?? '',
-            'app.locale' => getenv('APP_LOCALE') ?? 'en',
-            'app.template_dir' => getenv('APP_TEMPLATE_DIR') ?? '',
+            'app.url' => getenv('APP_URL') ?: '',
+            'app.locale' => getenv('APP_LOCALE') ?: 'en',
+            'app.template_dir' => getenv('APP_TEMPLATE_DIR') ?: '',
         ];
     }
 

@@ -127,14 +127,14 @@ abstract class BaseKernel
         error_log(
             json_encode($data) . PHP_EOL,
             3,
-            $this->getLogDir() . DIRECTORY_SEPARATOR . $this->container->get('essential.environment') . '.log'
+            $this->getLogDir() . DIRECTORY_SEPARATOR . $this->getEnv() . '.log'
         );
     }
 
     final private function boot(): void
     {
         (new DotEnv($this->getProjectDir() . DIRECTORY_SEPARATOR . '.env'))->load();
-        $this->initEnv(getenv('APP_ENV'));
+        $this->initEnv(getenv('APP_ENV') ?: 'prod');
 
         date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'UTC');
 
