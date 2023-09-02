@@ -1,0 +1,38 @@
+{
+    "name": "devcoder-xyz/essential-core",
+    "description": "The core Essential framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "F. Michel.R",
+            "email": "dev@devcoder.xyz",
+            "homepage": "https://essential.devcoder.xyz"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Essential\\Core\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "psr/container": "^1.0",
+        "psr/http-message": "~1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/log": "^1.1",
+        "devcoder-xyz/php-dotenv": "^1.0",
+        "devcoder-xyz/php-options-resolver": "^1.0",
+        "symfony/console": "^5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
