@@ -8,17 +8,18 @@ use DevCoder\Listener\ListenerProvider;
 use DevCoder\Renderer\PhpRenderer;
 use DevCoder\Route;
 use DevCoder\Router;
-use LogicException;
-use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Essential\Core\Command\CacheClearCommand;
 use Essential\Core\Command\DebugEnvCommand;
 use Essential\Core\Command\MakeCommandCommand;
 use Essential\Core\Command\MakeControllerCommand;
 use Essential\Core\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Essential\Core\ErrorHandler\ExceptionHandler;
+use Essential\Core\Manager\CacheManager;
 use Essential\Core\Middlewares\RouterMiddleware;
 use Essential\Core\Router\Bridge\RouteFactory;
+use LogicException;
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Application;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -74,12 +75,15 @@ final class EssentialCorePackage implements PackageInterface
                     $application->addCommands($commands);
                     return $application;
                 },
+                CacheManager::class => static function (ContainerInterface $container) {
+                    return new CacheManager($container->get('essential.cache_dir'));
+                },
                 'render' => static function (ContainerInterface $container) {
                     if (class_exists(Environment::class)) {
                         $loader = new FilesystemLoader($container->get('app.template_dir'));
                         return new Environment($loader, [
                             'debug' => $container->get('essential.debug'),
-                            'cache' => $container->get('essential.environment') == 'dev' ? false : $container->get('pulsar.cache_dir'),
+                            'cache' => $container->get('essential.environment') == 'dev' ? false : $container->get('essential.cache_dir'),
                         ]);
                     } elseif (class_exists(PhpRenderer::class)) {
                         return new PhpRenderer($container->get('app.template_dir'));

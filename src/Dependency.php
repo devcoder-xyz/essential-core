@@ -10,16 +10,13 @@ final class Dependency
     const CACHE_KEY = '__essential_app_dependency';
 
     private BaseKernel $baseKernel;
-    private CacheManager $cacheManager;
 
     public function __construct(BaseKernel $baseKernel)
     {
         $this->baseKernel = $baseKernel;
-        $this->cacheManager = new CacheManager($this->baseKernel->getCacheDir());
     }
     public function load(): array
     {
-        $items = $this->cacheManager->get(self::CACHE_KEY);
         if ($this->baseKernel->getEnv() == 'prod' && !empty($items)) {
             return $items;
         }
@@ -38,11 +35,7 @@ final class Dependency
             $commands = array_merge($package->getCommands(), $commands);
         }
 
-        $items = [$services, $parameters, $listeners, $routes, $commands, $packages];
-
-        $this->cacheManager->set(self::CACHE_KEY, $items);
-
-        return $items;
+        return [$services, $parameters, $listeners, $routes, $commands, $packages];
     }
 
     /**
