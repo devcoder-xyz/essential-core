@@ -151,7 +151,7 @@ abstract class BaseKernel
             $services,
             [
                 'essential.packages' => $packages,
-                'essential.middleware' => $middleware,
+                'essential.middleware' => $this->middlewareCollection,
                 'essential.commands' => $commands,
                 'essential.listeners' => $listeners,
                 'essential.routes' => $routes,
