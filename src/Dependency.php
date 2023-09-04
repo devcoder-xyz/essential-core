@@ -17,10 +17,6 @@ final class Dependency
     }
     public function load(): array
     {
-        if ($this->baseKernel->getEnv() == 'prod' && !empty($items)) {
-            return $items;
-        }
-
         $services = $this->loadConfigurationIfExists('services.php');
         $parameters = $this->loadParameters('parameters.php');
         $listeners = $this->loadConfigurationIfExists('listeners.php');
