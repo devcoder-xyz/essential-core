@@ -2,24 +2,33 @@
 
 namespace Essential\Core;
 
+use Essential\Core\Manager\CacheManager;
 use Essential\Core\Package\PackageInterface;
 
 final class Dependency
 {
+    const CACHE_KEY = '__essential_app_dependency';
+
     private BaseKernel $baseKernel;
+    private CacheManager $cacheManager;
 
     public function __construct(BaseKernel $baseKernel)
     {
         $this->baseKernel = $baseKernel;
+        $this->cacheManager = new CacheManager($this->baseKernel->getCacheDir());
     }
-
     public function load(): array
     {
-        $services = (require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'services.php');
-        $parameters = $this->loadParameters(require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'parameters.php');
-        $listeners = (require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'listeners.php');
-        $routes = (require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'routes.php');
-        $commands = (require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'commands.php');
+        $items = $this->cacheManager->get(self::CACHE_KEY);
+        if ($this->baseKernel->getEnv() == 'prod' && !empty($items)) {
+            return $items;
+        }
+
+        $services = $this->loadConfigurationIfExists('services.php');
+        $parameters = $this->loadParameters('parameters.php');
+        $listeners = $this->loadConfigurationIfExists('listeners.php');
+        $routes = $this->loadConfigurationIfExists('routes.php');
+        $commands = $this->loadConfigurationIfExists('commands.php');
         $packages = $this->getPackages();
         foreach ($packages as $package) {
             $services = array_merge($package->getDefinitions(), $services);
@@ -28,7 +37,12 @@ final class Dependency
             $routes = array_merge($package->getRoutes(), $routes);
             $commands = array_merge($package->getCommands(), $commands);
         }
-        return [$services, $parameters, $listeners, $routes, $commands, $packages];
+
+        $items = [$services, $parameters, $listeners, $routes, $commands, $packages];
+
+        $this->cacheManager->set(self::CACHE_KEY, $items);
+
+        return $items;
     }
 
     /**
@@ -36,7 +50,7 @@ final class Dependency
      */
     private function getPackages(): array
     {
-        $packagesName = (require $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . 'packages.php');
+        $packagesName = $this->loadConfigurationIfExists('packages.php');
         $packages = [];
         foreach ($packagesName as $packageName => $envs) {
             if (!in_array($this->baseKernel->getEnv(), $envs)) {
@@ -47,8 +61,20 @@ final class Dependency
         return $packages;
     }
 
-    private function loadParameters(array $parameters): array
+    private function loadConfigurationIfExists(string $fileName): array
     {
+        $filePath = $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . $fileName;
+        if (file_exists($filePath)) {
+            return require $filePath;
+        }
+
+        return [];
+    }
+
+    private function loadParameters(string $fileName): array
+    {
+        $parameters = $this->loadConfigurationIfExists($fileName);
+
         $parameters['essential.environment'] = $this->baseKernel->getEnv();
         $parameters['essential.debug'] = $this->baseKernel->getEnv() === 'dev';
         $parameters['essential.project_dir'] = $this->baseKernel->getProjectDir();
