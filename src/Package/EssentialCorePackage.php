@@ -9,7 +9,9 @@ use DevCoder\Renderer\PhpRenderer;
 use DevCoder\Route;
 use DevCoder\Router;
 use Essential\Core\Command\CacheClearCommand;
+use Essential\Core\Command\DebugContainerCommand;
 use Essential\Core\Command\DebugEnvCommand;
+use Essential\Core\Command\DebugRouteCommand;
 use Essential\Core\Command\MakeCommandCommand;
 use Essential\Core\Command\MakeControllerCommand;
 use Essential\Core\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
@@ -133,7 +135,9 @@ final class EssentialCorePackage implements PackageInterface
             CacheClearCommand::class,
             MakeControllerCommand::class,
             MakeCommandCommand::class,
-            DebugEnvCommand::class
+            DebugEnvCommand::class,
+            DebugContainerCommand::class,
+            DebugRouteCommand::class,
         ];
     }
 }

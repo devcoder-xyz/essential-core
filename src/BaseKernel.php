@@ -145,21 +145,25 @@ abstract class BaseKernel
         });
         $this->middlewareCollection = array_keys($middleware);
 
-        list($services, $parameters, $listeners, $routes, $commands) = (new Dependency($this))->load();
-        $this->container = $this->loadContainer(array_merge(
+        list($services, $parameters, $listeners, $routes, $commands, $packages) = (new Dependency($this))->load();
+        $definitions = array_merge(
             $parameters,
             $services,
             [
+                'essential.packages' => $packages,
+                'essential.middleware' => $middleware,
                 'essential.commands' => $commands,
                 'essential.listeners' => $listeners,
                 'essential.routes' => $routes,
                 BaseKernel::class => $this
             ]
-        ));
+        );
+        $definitions['essential.services_ids'] = array_keys($definitions);
 
+        $this->container = $this->loadContainer($definitions);
     }
 
-    final private function initEnv($env): void
+    final private function initEnv(string $env): void
     {
         $environments = self::getAvailableEnvironments();
         if (!in_array($env, $environments)) {
