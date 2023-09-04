@@ -70,12 +70,18 @@ abstract class BaseKernel
             $requestHandler = new RequestHandler($this->container, $this->middlewareCollection);
             $response = $requestHandler->handle($request);
             if ($this->startTime !== null) {
-                $diff = (microtime(true) - $this->startTime) * 1000;
+                $diff = (microtime(true) - $this->startTime);
+                $this->log([
+                    'request' => $request->getUri()->getPath(),
+                    'load_time_ms' => $diff * 1000 . ' ms',
+                    'load_time_second' => number_format($diff,3) . ' s',
+                    'environment' => $this->getEnv(),
+                ]);
             }
             return $response;
         } catch (Throwable $exception) {
             if (!$exception instanceof HttpExceptionInterface) {
-                $this->log($exception);
+                $this->logException($exception);
             }
 
             $exceptionHandler = $this->container->get(ExceptionHandler::class);
@@ -108,17 +114,20 @@ abstract class BaseKernel
         return App::createContainer($definitions, ['cache_dir' => $this->getCacheDir()]);
     }
 
-    protected function log(Throwable $exception): void
+    final protected function logException(Throwable $exception): void
     {
-        $data = [
+        $this->log([
             'date' => (new DateTimeImmutable())->format('c'),
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'trace' => $exception->getTrace(),
-        ];
+        ]);
+    }
 
+    final protected function log(array $data): void
+    {
         error_log(
             json_encode($data) . PHP_EOL,
             3,
