@@ -39,7 +39,7 @@ use function sprintf;
  */
 abstract class BaseKernel
 {
-    public const VERSION = '1.0.0';
+    public const VERSION = '0.1.0-alpha';
     public const NAME = 'Essential';
 
     private const DEFAULT_ENVIRONMENTS = [

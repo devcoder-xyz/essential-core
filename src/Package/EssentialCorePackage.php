@@ -2,7 +2,6 @@
 
 namespace Essential\Core\Package;
 
-use Aura\Router\RouterContainer;
 use DevCoder\Listener\EventDispatcher;
 use DevCoder\Listener\ListenerProvider;
 use DevCoder\Renderer\PhpRenderer;
@@ -79,7 +78,7 @@ final class EssentialCorePackage implements PackageInterface
                         $loader = new FilesystemLoader($container->get('app.template_dir'));
                         return new Environment($loader, [
                             'debug' => $container->get('essential.debug'),
-                            'cache' => $container->get('essential.environment') == 'dev' ? false : $container->get('pulsar.cache_dir'),
+                            'cache' => $container->get('essential.environment') == 'dev' ? false : $container->get('essential.cache_dir'),
                         ]);
                     } elseif (class_exists(PhpRenderer::class)) {
                         return new PhpRenderer($container->get('app.template_dir'));

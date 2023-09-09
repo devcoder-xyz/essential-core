@@ -126,8 +126,10 @@ return [
 
 ```php
 $kernel = new Kernel();
-$response = $kernel->handle(App::createServerRequest());
-\send($response);
+if (php_sapi_name() !== 'cli') {
+    $response = $kernel->handle(App::createServerRequest());
+    \send($response);
+}
 ```
 # Essential Framework Core Configuration
 

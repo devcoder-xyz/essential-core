@@ -145,7 +145,7 @@ use Essential\Core\Http\Exception\HttpExceptionInterface;
 </head>
 <body>
 <header>
-    <div class="badge">Pulsar <?php echo BaseKernel::VERSION ?></div>
+    <div class="badge">Essential <?php echo BaseKernel::VERSION ?></div>
     <div class="badge">PHP <?php echo phpversion() ?></div>
     <div class="badge">ENVIRONMENT : <?php echo $env['APP_ENV'] ?></div>
     <div class="badge">METHOD : <?php echo $server['REQUEST_METHOD'] ?></div>
