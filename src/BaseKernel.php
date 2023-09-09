@@ -3,28 +3,23 @@ declare(strict_types=1);
 
 namespace Essential\Core;
 
-use Closure;
 use DateTimeImmutable;
 use DevCoder\DotEnv;
-use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
 use Essential\Core\ErrorHandler\ErrorHandler;
 use Essential\Core\ErrorHandler\ExceptionHandler;
 use Essential\Core\Handler\RequestHandler;
 use Essential\Core\Http\Exception\HttpExceptionInterface;
-use Essential\Core\Package\PackageInterface;
-use Symfony\Component\Console\Application;
+use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use function array_filter;
 use function array_keys;
 use function array_merge;
 use function date_default_timezone_set;
 use function error_reporting;
-use function get_class;
 use function getenv;
 use function implode;
 use function in_array;
@@ -75,12 +70,18 @@ abstract class BaseKernel
             $requestHandler = new RequestHandler($this->container, $this->middlewareCollection);
             $response = $requestHandler->handle($request);
             if ($this->startTime !== null) {
-                $diff = (microtime(true) - $this->startTime) * 1000;
+                $diff = (microtime(true) - $this->startTime);
+                $this->log([
+                    'request' => $request->getUri()->getPath(),
+                    'load_time_ms' => $diff * 1000 . ' ms',
+                    'load_time_second' => number_format($diff,3) . ' s',
+                    'environment' => $this->getEnv(),
+                ]);
             }
             return $response;
         } catch (Throwable $exception) {
             if (!$exception instanceof HttpExceptionInterface) {
-                $this->log($exception);
+                $this->logException($exception);
             }
 
             $exceptionHandler = $this->container->get(ExceptionHandler::class);
@@ -113,17 +114,20 @@ abstract class BaseKernel
         return App::createContainer($definitions, ['cache_dir' => $this->getCacheDir()]);
     }
 
-    protected function log(Throwable $exception): void
+    final protected function logException(Throwable $exception): void
     {
-        $data = [
+        $this->log([
             'date' => (new DateTimeImmutable())->format('c'),
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
             'trace' => $exception->getTrace(),
-        ];
+        ]);
+    }
 
+    final protected function log(array $data): void
+    {
         error_log(
             json_encode($data) . PHP_EOL,
             3,
@@ -150,21 +154,25 @@ abstract class BaseKernel
         });
         $this->middlewareCollection = array_keys($middleware);
 
-        list($services, $parameters, $listeners, $routes, $commands) = (new Dependency($this))->load();
-        $this->container = $this->loadContainer(array_merge(
+        list($services, $parameters, $listeners, $routes, $commands, $packages) = (new Dependency($this))->load();
+        $definitions = array_merge(
             $parameters,
             $services,
             [
+                'essential.packages' => $packages,
+                'essential.middleware' => $this->middlewareCollection,
                 'essential.commands' => $commands,
                 'essential.listeners' => $listeners,
                 'essential.routes' => $routes,
                 BaseKernel::class => $this
             ]
-        ));
+        );
+        $definitions['essential.services_ids'] = array_keys($definitions);
 
+        $this->container = $this->loadContainer($definitions);
     }
 
-    final private function initEnv($env): void
+    final private function initEnv(string $env): void
     {
         $environments = self::getAvailableEnvironments();
         if (!in_array($env, $environments)) {

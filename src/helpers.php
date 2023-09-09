@@ -215,18 +215,14 @@ if (!function_exists('dump')) {
      */
     function dump(...$data)
     {
-        echo '<pre style="color: #3b4351;
-            background-color: #f1f1f1;
-            border: 1px dashed #03a9f4;
-            margin:0.2em;
-            padding:0.2em;
-            overflow: auto;
-            line-height: 1rem;
-            white-space: pre-wrap;
-            white-space: -moz-pre-wrap;
-            white-space: -o-pre-wrap;
-            word-wrap: break-word;">';
-        var_dump(...$data);
-        echo "</pre>";
+        echo '<pre style="font-size: 14px; font-family: Monaco, monospace; background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">';
+
+        foreach ($data as $item) {
+            echo '<div style="background-color: #fff; border: 1px solid #ddd; padding: 5px; margin-bottom: 10px;">';
+            var_dump($item);
+            echo '</div>';
+        }
+
+        echo '</pre>';
     }
 }
