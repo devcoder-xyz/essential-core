@@ -4,6 +4,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Essential\Core\App;
+use Psr\Http\Message\ServerRequestInterface;
 
 if (!function_exists('essential_composer_loader')) {
 
@@ -61,6 +62,19 @@ if (!function_exists('container')) {
     function container(): ContainerInterface
     {
         return App::getContainer();
+    }
+}
+
+if (!function_exists('create_request')) {
+
+    /**
+     * Creates a new HTTP request.
+     *
+     * @return ServerRequestInterface The HTTP response.
+     */
+    function create_request(): ServerRequestInterface
+    {
+        return App::createServerRequest();
     }
 }
 
