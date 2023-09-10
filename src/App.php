@@ -51,12 +51,17 @@ final class App
         $this->options = $resolver->resolve($options);
     }
 
-    public static function init(string $path): void
+    public static function initWithPath(string $path): void
     {
         if (!file_exists($path)) {
             throw new \InvalidArgumentException(sprintf('%s does not exist', $path));
         }
-        self::$instance = new self(require $path);
+        self::init(require $path);
+    }
+
+    public static function init(array $options): void
+    {
+        self::$instance = new self($options);
     }
 
     public static function createServerRequest(): ServerRequestInterface

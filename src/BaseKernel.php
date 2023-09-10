@@ -34,15 +34,14 @@ use function sprintf;
  */
 abstract class BaseKernel
 {
+    private const DEFAULT_ENV = 'prod';
     public const VERSION = '0.1.0-alpha';
     public const NAME = 'Essential';
-
     private const DEFAULT_ENVIRONMENTS = [
         'dev',
         'prod'
     ];
-
-    private ?string $env = null;
+    private string $env = self::DEFAULT_ENV;
     protected ContainerInterface $container;
     /**
      * @var array<MiddlewareInterface, string>
@@ -55,7 +54,7 @@ abstract class BaseKernel
      */
     public function __construct()
     {
-        App::init($this->getConfigDir() . DIRECTORY_SEPARATOR . 'framework.php');
+        App::init($this->loadConfigurationIfExists('framework.php'));
         $this->boot();
     }
 
@@ -74,7 +73,7 @@ abstract class BaseKernel
                 $this->log([
                     'request' => $request->getUri()->getPath(),
                     'load_time_ms' => $diff * 1000 . ' ms',
-                    'load_time_second' => number_format($diff,3) . ' s',
+                    'load_time_second' => number_format($diff, 3) . ' s',
                     'environment' => $this->getEnv(),
                 ]);
             }
@@ -109,6 +108,10 @@ abstract class BaseKernel
 
     abstract public function getPublicDir(): string;
 
+    abstract public function getEnvFile(): string;
+
+    abstract protected function afterBoot(): void;
+
     protected function loadContainer(array $definitions): ContainerInterface
     {
         return App::createContainer($definitions, ['cache_dir' => $this->getCacheDir()]);
@@ -137,10 +140,9 @@ abstract class BaseKernel
 
     final private function boot(): void
     {
-        (new DotEnv($this->getProjectDir() . DIRECTORY_SEPARATOR . '.env'))->load();
-        $this->initEnv(getenv('APP_ENV') ?: 'prod');
+        $this->initEnv();
 
-        date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'UTC');
+        date_default_timezone_set(getenv('APP_TIMEZONE'));
 
         error_reporting(0);
         if ($this->getEnv() === 'dev') {
@@ -148,7 +150,7 @@ abstract class BaseKernel
             ErrorHandler::register();
         }
 
-        $middleware = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'middleware.php');
+        $middleware = $this->loadConfigurationIfExists('middleware.php');
         $middleware = array_filter($middleware, function ($environments) {
             return in_array($this->getEnv(), $environments);
         });
@@ -170,23 +172,48 @@ abstract class BaseKernel
         $definitions['essential.services_ids'] = array_keys($definitions);
 
         $this->container = $this->loadContainer($definitions);
+        $this->afterBoot();
     }
 
-    final private function initEnv(string $env): void
+    final private function initEnv(): void
     {
+        (new DotEnv($this->getEnvFile()))->load();
+        foreach (['APP_ENV' => self::DEFAULT_ENV, 'APP_TIMEZONE' => 'UTC', 'APP_LOCALE' => 'en'] as $k => $value) {
+            if (getenv($k) === false) {
+                self::putEnv($k, $value);
+            }
+        }
+
         $environments = self::getAvailableEnvironments();
-        if (!in_array($env, $environments)) {
+        if (!in_array(getenv('APP_ENV'), $environments)) {
             throw new InvalidArgumentException(sprintf(
                     'The env "%s" do not exist. Defined environments are: "%s".',
-                    $env,
+                    getenv('APP_ENV'),
                     implode('", "', $environments))
             );
         }
-        $this->env = $env;
+        $this->env = getenv('APP_ENV');
+    }
+
+    final public function loadConfigurationIfExists(string $fileName): array
+    {
+        $filePath = $this->getConfigDir() . DIRECTORY_SEPARATOR . $fileName;
+        if (file_exists($filePath)) {
+            return require $filePath;
+        }
+
+        return [];
     }
 
     final private static function getAvailableEnvironments(): array
     {
         return array_unique(array_merge(self::DEFAULT_ENVIRONMENTS, App::getCustomEnvironments()));
+    }
+
+    final private static function putEnv(string $name, $value): void
+    {
+        putenv(sprintf('%s=%s', $name, $value));
+        $_ENV[$name] = $value;
+        $_SERVER[$name] = $value;
     }
 }

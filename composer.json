@@ -12,7 +12,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Essential\\Core\\": "src"
+            "Essential\\Core\\": "src",
+            "Test\\Essential\\Core\\": "tests"
         },
         "files": [
             "src/helpers.php"

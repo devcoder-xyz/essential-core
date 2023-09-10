@@ -52,12 +52,7 @@ final class Dependency
 
     private function loadConfigurationIfExists(string $fileName): array
     {
-        $filePath = $this->baseKernel->getConfigDir() . DIRECTORY_SEPARATOR . $fileName;
-        if (file_exists($filePath)) {
-            return require $filePath;
-        }
-
-        return [];
+        return $this->baseKernel->loadConfigurationIfExists($fileName);
     }
 
     private function loadParameters(string $fileName): array
