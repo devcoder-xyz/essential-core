@@ -8,7 +8,7 @@ use Essential\Core\Package\PackageInterface;
 use Essential\Core\Router\Route;
 use Psr\Container\ContainerInterface;
 
-class MyPackage implements PackageInterface
+class MyPackageTest implements PackageInterface
 {
     public function getDefinitions(): array
     {

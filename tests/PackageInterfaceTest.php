@@ -3,13 +3,13 @@
 namespace Test\Essential\Core;
 
 use PHPUnit\Framework\TestCase;
-use Test\Essential\Core\Package\MyPackage;
+use Test\Essential\Core\Package\MyPackageTest;
 
 class PackageInterfaceTest extends TestCase
 {
     public function test()
     {
-        $package = new MyPackage();
+        $package = new MyPackageTest();
         $definitions = $package->getDefinitions();
         $this->assertIsArray($package->getDefinitions());
 

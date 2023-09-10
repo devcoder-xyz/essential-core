@@ -246,7 +246,14 @@ return [
     },
     'container' => static function (array $definitions, array $options): ContainerInterface {
 
-        return new class implements ContainerInterface {
+        return new class($definitions) implements ContainerInterface  {
+
+            private array $definitions;
+
+            public function __construct(array $definitions)
+            {
+                $this->definitions = $definitions;
+            }
 
             /**
              * @param string $id
@@ -254,12 +261,12 @@ return [
              */
             public function get(string $id)
             {
-                // TODO: Implement get() method.
+                return $this->definitions[$id] ?? null;
             }
 
             public function has(string $id)
             {
-                // TODO: Implement has() method.
+                return array_key_exists($id, $this->definitions);
             }
         };
     },
