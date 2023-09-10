@@ -8,7 +8,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Test\Essential\Core\Middleware\ResponseMiddlewareTest;
-use Test\Essential\Core\Package\MyPackage;
 
 class RequestHandlerTest extends TestCase
 {

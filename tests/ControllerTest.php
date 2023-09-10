@@ -5,14 +5,14 @@ namespace Test\Essential\Core;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use Test\Essential\Core\Controller\SampleController;
+use Test\Essential\Core\Controller\SampleControllerTest;
 
 class ControllerTest extends TestCase
 {
     public function testMiddleware()
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
-        $controller = new SampleController([$middleware]);
+        $controller = new SampleControllerTest([$middleware]);
 
         $middlewares = $controller->getMiddlewares();
 
@@ -24,12 +24,12 @@ class ControllerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $invalidMiddleware = 'InvalidMiddlewareClass';
-        $controller = new SampleController([$invalidMiddleware]);
+        $controller = new SampleControllerTest([$invalidMiddleware]);
     }
 
     public function testGet()
     {
-        $controller = new SampleController([]);
+        $controller = new SampleControllerTest([]);
         $container = $this->createMock(ContainerInterface::class);
 
         $controller->setContainer($container);

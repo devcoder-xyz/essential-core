@@ -4,7 +4,7 @@ namespace Test\Essential\Core\Controller;
 
 use Essential\Core\Controller\Controller;
 
-class SampleController extends Controller
+class SampleControllerTest extends Controller
 {
     public function __construct(array $middleware)
     {

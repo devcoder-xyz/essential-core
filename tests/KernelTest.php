@@ -5,7 +5,7 @@ namespace Test\Essential\Core;
 use Essential\Core\BaseKernel;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Test\Essential\Core\Kernel\SampleKernel;
+use Test\Essential\Core\Kernel\SampleKernelTest;
 use Test\Essential\Core\Package\MyPackageTest;
 
 class KernelTest extends TestCase
@@ -31,7 +31,7 @@ class KernelTest extends TestCase
     }
     public function testLoadKernel()
     {
-        $baseKernel = new SampleKernel('.env');
+        $baseKernel = new SampleKernelTest('.env');
         $this->assertEquals('dev', $baseKernel->getEnv());
         $this->assertEquals('dev', getenv('APP_ENV'));
         $this->assertEquals('Europe/Paris', getenv('APP_TIMEZONE'));
@@ -42,13 +42,13 @@ class KernelTest extends TestCase
 
     public function testLoadConfigurationIfExists()
     {
-        $baseKernel = new SampleKernel('.env');
+        $baseKernel = new SampleKernelTest('.env');
         $this->assertEquals([], $baseKernel->loadConfigurationIfExists('test.php'));
     }
 
     public function testDefaultValue()
     {
-        $baseKernel = new SampleKernel('.env.test');
+        $baseKernel = new SampleKernelTest('.env.test');
         $this->assertEquals('prod', $baseKernel->getEnv());
         $this->assertEquals('prod', getenv('APP_ENV'));
         $this->assertEquals('UTC', getenv('APP_TIMEZONE'));
@@ -59,7 +59,7 @@ class KernelTest extends TestCase
 
     public function testKernelContainer()
     {
-        $baseKernel = new SampleKernel('.env');
+        $baseKernel = new SampleKernelTest('.env');
         $container = $baseKernel->getContainer();
         $this->assertInstanceOf(ContainerInterface::class, $baseKernel->getContainer());
 

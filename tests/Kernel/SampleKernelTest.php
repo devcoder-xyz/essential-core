@@ -4,7 +4,7 @@ namespace Test\Essential\Core\Kernel;
 
 use Essential\Core\BaseKernel;
 
-class  SampleKernel extends BaseKernel
+class  SampleKernelTest extends BaseKernel
 {
 
     private $envfile;
