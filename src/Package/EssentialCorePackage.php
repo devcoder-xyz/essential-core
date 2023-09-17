@@ -87,7 +87,7 @@ final class EssentialCorePackage implements PackageInterface
                     $routes = $container->get('essential.routes');
                     $factory = new RouteFactory();
 
-                    $router = new Router([], $container->get('app.url'));
+                    $router = new DevCoderRouter([], $container->get('app.url'));
                     foreach ($routes as $route) {
                         $router->add($factory->createDevCoderRoute($route));
                     }
