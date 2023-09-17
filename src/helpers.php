@@ -229,6 +229,10 @@ if (!function_exists('dump')) {
      */
     function dump(...$data)
     {
+        if(php_sapi_name() === 'cli') {
+            var_dump($data);
+            return;
+        }
         echo '<pre style="font-size: 14px; font-family: Monaco, monospace; background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">';
 
         foreach ($data as $item) {

@@ -60,12 +60,17 @@ final class ControllerMiddleware implements MiddlewareInterface
 
     private function resolveController(ServerRequestInterface $request): callable
     {
-        $controller = $this->container->get($request->getAttribute(self::CONTROLLER));
-        if (is_callable($controller)) {
+        $controller = $request->getAttribute(self::CONTROLLER);
+        $action = $request->getAttribute(self::ACTION);
+
+        if (is_string($controller)) {
+            $controller = $this->container->get($controller);
+        }
+
+        if (is_callable($controller) && $action === null) {
             return $controller;
         }
 
-        $action = $request->getAttribute(self::ACTION);
         if (method_exists($controller, $action) === false) {
             throw new BadMethodCallException(
                 $action === null
