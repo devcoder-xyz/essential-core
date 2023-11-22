@@ -9,7 +9,7 @@ namespace Essential\Core\Http\Exception;
  */
 class HttpException extends \Exception implements HttpExceptionInterface
 {
-    protected static ?string $defaultMessage = 'An error occurred';
+    protected static ?string $defaultMessage = 'An error occurred . Please try again later.';
     private int $statusCode;
 
     public function __construct(int $statusCode, ?string $message = null, int $code = 0, \Throwable $previous = null)

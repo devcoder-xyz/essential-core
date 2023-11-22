@@ -6,8 +6,7 @@ use Essential\Core\BaseKernel;
 
 class  SampleKernelTest extends BaseKernel
 {
-
-    private $envfile;
+    private string $envfile;
 
     public function __construct(string $envfile)
     {

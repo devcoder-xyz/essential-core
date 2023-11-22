@@ -121,6 +121,7 @@ abstract class BaseKernel
     {
         $this->log([
             'date' => (new DateTimeImmutable())->format('c'),
+            'id' => uniqid('ERR'),
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
@@ -162,10 +163,10 @@ abstract class BaseKernel
             $services,
             [
                 'essential.packages' => $packages,
-                'essential.middleware' => $this->middlewareCollection,
                 'essential.commands' => $commands,
                 'essential.listeners' => $listeners,
                 'essential.routes' => $routes,
+                'essential.middleware' => $this->middlewareCollection,
                 BaseKernel::class => $this
             ]
         );
