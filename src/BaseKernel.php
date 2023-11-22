@@ -121,7 +121,7 @@ abstract class BaseKernel
     {
         $this->log([
             'date' => (new DateTimeImmutable())->format('c'),
-            'id' => uniqid('ERR'),
+            'id' => mb_strtoupper(uniqid('ERR')),
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
