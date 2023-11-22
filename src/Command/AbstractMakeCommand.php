@@ -32,7 +32,7 @@ abstract class AbstractMakeCommand extends Command
         $loader = essential_composer_loader();
         foreach ($loader->getPrefixesPsr4() as $namespace => $paths) {
             foreach ($paths as $path) {
-                if (str_starts_with($controllerName, $namespace)) {
+                if (strpos($controllerName, $namespace) === 0) {
                     $path = realpath($path);
                     return $path . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, substr($controllerName, strlen($namespace))) . '.php';
                 }

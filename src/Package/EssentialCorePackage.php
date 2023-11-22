@@ -74,7 +74,6 @@ final class EssentialCorePackage implements PackageInterface
 
                     throw new LogicException('The "render" requires a Renderer to be available. You can choose between installing "devcoder-xyz/php-renderer" or "twig/twig" depending on your preference.');
                 },
-
                 'router' => static function (ContainerInterface $container): object {
 
                     if (!class_exists(DevCoderRouter::class)) {
