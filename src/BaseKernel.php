@@ -133,7 +133,7 @@ abstract class BaseKernel
     final protected function log(array $data): void
     {
         error_log(
-            json_encode($data) . PHP_EOL,
+            json_encode($data, JSON_UNESCAPED_SLASHES) . PHP_EOL,
             3,
             $this->getLogDir() . DIRECTORY_SEPARATOR . $this->getEnv() . '.log'
         );

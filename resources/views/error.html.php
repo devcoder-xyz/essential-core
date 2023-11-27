@@ -15,6 +15,7 @@ use Essential\Core\Http\Exception\HttpExceptionInterface;
 <head>
     <meta charset="UTF-8"/>
     <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noodp,notranslate,noimageindex"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $e->getMessage(); ?></title>
     <style>
         *,
